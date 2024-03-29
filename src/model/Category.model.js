@@ -4,16 +4,16 @@ const Schema = mongoose.Schema;
 let categorySchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
-        required: false
+        required: true
     },
 },
     {
         timestamps: true,
-        collection: 'category',
     }
 );
 module.exports = mongoose.model('Category', categorySchema);

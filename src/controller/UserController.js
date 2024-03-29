@@ -1,5 +1,6 @@
 const User = require('../model/User.model');
 const UserService = require('../services/UserService');
+const jwtService = require('../services/JwtService');
 
 const createUser = async (req, res) => {
     try {
@@ -54,11 +55,13 @@ const loginUser = async (req, res) => {
         const response = await UserService.loginUser(req.body);
         const { refresh_token, ...newReponse } = response;
         res.cookie('refresh_token', refresh_token, {
-            HttpOnly: true,
-            Secure: true,
-        })
+            httpOnly: true,
+            secure: false,
+            sameSite: 'strict',
+            path: '/',
+        });
 
-        return res.status(200).json(newReponse);
+        return res.status(200).json({ ...newReponse, refresh_token });
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -115,10 +118,64 @@ const getAllUser = async (req, res) => {
     }
 }
 
+const getDetailUser = async (req, res) => {
+    try {
+        const userId = req.params.id
+        if (!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        const response = await UserService.getDetailsUser(userId)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const refreshToken = async (req, res) => {
+    console.log('req.cookies.refreshToken: ', req.cookies.refresh_token);
+    try {
+        const token = req.cookies.refresh_token
+        if (!token) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The token is required'
+            })
+        }
+        const response = await jwtService.refreshTokenJwtService(token);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
+const logoutUser = async (req, res) => {
+    try {
+        res.clearCookie('refresh_token');
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Logout Success'
+        });
+    } catch (e) {
+        return res.status(500).json({
+            message: 'Internal Server Error'
+        });
+    }
+}
+
 module.exports = {
     createUser,
     loginUser,
     updateUser,
     deleteUser,
-    getAllUser
+    getAllUser,
+    refreshToken,
+    getDetailUser,
+    logoutUser
 }

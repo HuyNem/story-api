@@ -2,19 +2,19 @@ const Story = require('../model/Story.model');
 
 const createStory = (newStory) => {
     return new Promise(async (resolve, reject) => {
-        const { name, image, author, describe, content } = newStory;
+        const { name, description, category, content, author, image, id_Member  } = newStory;
         try {
             const checkName = await Story.findOne({
                 name: name
             })
             if (checkName !== null) {
                 resolve({
-                    status: "OK",
-                    message: "The name is already"
+                    status: "AR",
+                    message: "Tên truyện đã tồn tại"
                 })
             }
             const createStory = await Story.create({
-                name, image, author, describe, content
+                name, description, category, content, author, image, id_Member
             });
             if (createStory) {
                 resolve({
@@ -59,7 +59,7 @@ const getDetailStory = (id) => {
             const story = await Story.findOne({ _id: id });
             if (story === null) {
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'Story not found'
                 });
             };
@@ -77,7 +77,7 @@ const getDetailStory = (id) => {
 const getAllStory = (page) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const limit = 6;
+            const limit = 12;
             const totalStory = await Story.countDocuments();
             const allStory = await Story.find().limit(limit).skip(page * limit);
             resolve({
@@ -95,10 +95,29 @@ const getAllStory = (page) => {
 }
 
 
+const getStoriesByMemberId = (memberId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allStory = await Story.find({
+                id_Member: memberId
+            });
+            resolve({
+                status: 'OK',
+                message: 'get all story by member id successfully',
+                data: allStory,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+
 
 module.exports = {
     createStory,
     updateStory,
     getDetailStory,
-    getAllStory
+    getAllStory,
+    getStoriesByMemberId
 };

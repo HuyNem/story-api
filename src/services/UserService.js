@@ -68,7 +68,8 @@ const loginUser = (userLogin) => {
             resolve({
                 status: "OK",
                 message: "Login success",
-                access_token: access_token
+                access_token: access_token,
+                refresh_token: refresh_token
             })
 
         } catch (e) {
@@ -108,24 +109,23 @@ const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkUser = await User.findOne({
-                _id: id,
-            });
-            console.log('check user: ', checkUser);
+                _id: id
+            })
             if (checkUser === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'User not found'
+                    status: 'ERR',
+                    message: 'The user is not defined'
                 })
             }
 
-            // await User.findByIdAndDelete(id);
+            await User.findByIdAndDelete(id)
             resolve({
-                status: "OK",
-                message: "Delete user success",
+                status: 'OK',
+                message: 'Delete user success',
             })
         } catch (e) {
-            reject(e);
-        };
+            reject(e)
+        }
     })
 }
 
@@ -144,10 +144,34 @@ const getAllUser = () => {
     })
 }
 
+const getDetailsUser = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne({
+                _id: id
+            })
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'The user is not defined'
+                })
+            }
+            resolve({
+                status: 'OK',
+                message: 'SUCESS',
+                data: user
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     createUser,
     loginUser,
     updateUser,
     deleteUser,
     getAllUser,
+    getDetailsUser,
 };

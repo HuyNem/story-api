@@ -3,6 +3,9 @@ const userSchema = new mongoose.Schema(
     {
         name: { type: String },
         email: { type: String, required: true, unique: true },
+        avatar: { type: String },
+        description: { type: String },
+        facebook: { type: String },
         password: { type: String, required: true },
         isAdmin: { type: Boolean, default: false },
         access_token: { type: String },

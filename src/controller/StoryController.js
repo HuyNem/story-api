@@ -3,8 +3,8 @@ const StoryService = require('../services/StorySecvice');
 
 const createStory = async (req, res) => {
     try {
-        const { name, image, author, describe, content } = req.body;
-        if (!name || !image || !author || !describe || !content) {
+        const { name, description, category, content, author, image, id_Member } = req.body;
+        if (!name || !description || !category || !content || !author || !image || !id_Member) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The input is required'
@@ -70,10 +70,22 @@ const getAllStory = async (req, res) => {
     }
 }
 
+const getStoriesByMemberId = async (req, res) => {
+    try {
+        const response = await StoryService.getStoriesByMemberId();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
 
 module.exports = {
     createStory,
     updateStory,
     getDetailStory,
-    getAllStory
+    getAllStory,
+    getStoriesByMemberId
 }
