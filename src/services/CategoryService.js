@@ -70,9 +70,62 @@ const createCategory = (newCategory) => {
     })
 }
 
+//update category
+const updateCategory = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkCategory = await Category.findOne({
+                _id: id,
+            });
+            if (!checkCategory) {
+                resolve({
+                    status: 'OK',
+                    message: 'Category not found'
+                })
+            }
+            const updateCategory = await Category.findByIdAndUpdate(id, data, { new: true });
+
+            resolve({
+                status: "OK",
+                message: "update category successfully",
+                data: updateCategory
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//delete category
+const deleteCategory = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkCategory = await Category.findOne({
+                _id: id
+            })
+            if (!checkCategory) {
+                resolve({
+                    status: 'ERR',
+                    message: 'The category is not defined'
+                })
+            }
+
+            await Category.findByIdAndDelete(id)
+            resolve({
+                status: 'OK',
+                message: 'Delete category success',
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 
 module.exports = {
     getAllCategory,
     createCategory,
-    getCategoryById
+    getCategoryById,
+    updateCategory,
+    deleteCategory
 };

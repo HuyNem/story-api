@@ -1,10 +1,13 @@
 const Story = require('../model/Story.model');
+const Chapter = require('../model/Story.model');
 const StoryService = require('../services/StorySecvice');
 
+
+//create story
 const createStory = async (req, res) => {
     try {
-        const { name, description, category, content, author, image, id_Member } = req.body;
-        if (!name || !description || !category || !content || !author || !image || !id_Member) {
+        const { name, description, category, author, image, id_Member } = req.body;
+        if (!name || !description || !category || !author || !image || !id_Member) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The input is required'
@@ -16,6 +19,26 @@ const createStory = async (req, res) => {
         return res.status(404).json({
             message: e
         });
+    }
+}
+
+//get story by id
+const getStoryById = async (req, res) => {
+    try {
+        let storyId = req.params.id;
+        if (!storyId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The storyId is required'
+            })
+        }
+
+        const response = await StoryService.getStoryId(storyId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
     }
 }
 
@@ -41,15 +64,15 @@ const updateStory = async (req, res) => {
 
 const getDetailStory = async (req, res) => {
     try {
-        let storyId = req.params.id;
-        if (!storyId) {
+        let storyName = req.params.name;
+        if (!storyName) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The storyId is required'
             })
         }
 
-        const response = await StoryService.getDetailStory(storyId);
+        const response = await StoryService.getDetailStory(storyName);
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -58,10 +81,10 @@ const getDetailStory = async (req, res) => {
     }
 }
 
+//get all story
 const getAllStory = async (req, res) => {
     try {
-        const { page } = req.query;
-        const response = await StoryService.getAllStory(Number(page) || 0);
+        const response = await StoryService.getAllStory();
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -70,9 +93,17 @@ const getAllStory = async (req, res) => {
     }
 }
 
-const getStoriesByMemberId = async (req, res) => {
+//get story by category
+const getStoryByCategory = async (req, res) => {
     try {
-        const response = await StoryService.getStoriesByMemberId();
+        const { category, page } = req.params;
+        if (!category) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The category is required'
+            })
+        }
+        const response = await StoryService.getStoryByCategory(category, (Number(page) || 0));
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -80,6 +111,33 @@ const getStoriesByMemberId = async (req, res) => {
         });
     }
 }
+
+//get member stories
+const getMemberStories = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const response = await StoryService.getMemberStory(userId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
+//truyện chưa duyệt (admin)
+// const getPendingApprovalStories = async (req, res) => {
+//     try {
+//         const response = await StoryService.getAllStory();
+//         return res.status(200).json(response);
+//     } catch (e) {
+//         return res.status(404).json({
+//             message: e
+//         });
+//     }
+// }
+
+
 
 
 module.exports = {
@@ -87,5 +145,8 @@ module.exports = {
     updateStory,
     getDetailStory,
     getAllStory,
-    getStoriesByMemberId
+    getStoryByCategory,
+    getMemberStories,
+    getStoryById,
+
 }

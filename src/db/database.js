@@ -2,7 +2,7 @@
 //     db: 'mongodb://localhost:27017/story'
 // }
 
-const { mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
 async function connect() {
     try {

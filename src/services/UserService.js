@@ -11,7 +11,7 @@ const createUser = (newUser) => {
             })
             if (checkUser !== null) {
                 resolve({
-                    status: "OK",
+                    status: "ERR_EMAIL_AR",
                     message: "The email is already"
                 })
             }
@@ -84,7 +84,6 @@ const updateUser = (id, data) => {
             const checkUser = await User.findOne({
                 _id: id,
             });
-            console.log('check user: ', checkUser);
             if (checkUser === null) {
                 resolve({
                     status: 'OK',
@@ -92,7 +91,6 @@ const updateUser = (id, data) => {
                 })
             }
             const updateUser = await User.findByIdAndUpdate(id, data, { new: true });
-            console.log('update user: ', updateUser);
 
             resolve({
                 status: "OK",

@@ -15,12 +15,12 @@ const createUser = async (req, res) => {
             })
         } else if (!isCheckEmail) {
             return res.status(200).json({
-                status: 'ERR',
+                status: 'ERR_EMAIL',
                 message: 'The input is email'
             })
         } else if (password != confirmPassword) {
             return res.status(200).json({
-                status: 'ERR',
+                status: 'ERR_CONFIRM_PASSWORD',
                 message: 'The password is not equal to the confirm password'
             })
         }
@@ -39,7 +39,6 @@ const loginUser = async (req, res) => {
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const isCheckEmail = reg.test(email);
 
-        console.log(email, password);
         if (!email || !password) {
             return res.status(200).json({
                 status: 'ERR',
@@ -79,7 +78,6 @@ const updateUser = async (req, res) => {
                 message: 'The userId is required'
             })
         }
-        console.log('user id: ', userId);
         const response = await UserService.updateUser(userId, data);
         return res.status(200).json(response);
     } catch (e) {
@@ -137,7 +135,6 @@ const getDetailUser = async (req, res) => {
 }
 
 const refreshToken = async (req, res) => {
-    console.log('req.cookies.refreshToken: ', req.cookies.refresh_token);
     try {
         const token = req.cookies.refresh_token
         if (!token) {

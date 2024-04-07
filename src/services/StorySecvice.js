@@ -1,8 +1,10 @@
 const Story = require('../model/Story.model');
 
+
+//create story
 const createStory = (newStory) => {
     return new Promise(async (resolve, reject) => {
-        const { name, description, category, content, author, image, id_Member  } = newStory;
+        const { name, description, category, author, image, id_Member } = newStory;
         try {
             const checkName = await Story.findOne({
                 name: name
@@ -14,7 +16,7 @@ const createStory = (newStory) => {
                 })
             }
             const createStory = await Story.create({
-                name, description, category, content, author, image, id_Member
+                name, description, category, author, image, id_Member
             });
             if (createStory) {
                 resolve({
@@ -35,6 +37,15 @@ const updateStory = (id, data) => {
             const checkStory = await Story.findOne({
                 _id: id,
             });
+            const checkName = await Story.findOne({
+                name: data.name
+            });
+            if (checkName) {
+                resolve({
+                    status: 'AR',
+                    message: 'Tên truyện đã tồn tại'
+                })
+            }
             if (checkStory === null) {
                 resolve({
                     status: 'OK',
@@ -53,7 +64,8 @@ const updateStory = (id, data) => {
     })
 }
 
-const getDetailStory = (id) => {
+//get story by id (edit)
+const getStoryId = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const story = await Story.findOne({ _id: id });
@@ -74,26 +86,61 @@ const getDetailStory = (id) => {
     })
 }
 
-const getAllStory = (page) => {
+const getDetailStory = (name) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const limit = 12;
-            const totalStory = await Story.countDocuments();
-            const allStory = await Story.find().limit(limit).skip(page * limit);
+            const story = await Story.findOne({ name: name });
+            if (story === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Story not found'
+                });
+            };
             resolve({
                 status: 'OK',
-                message: 'get all story successfully',
-                data: allStory,
-                total: totalStory,
-                pageCurrent: Number(page + 1),
-                totalPage: Math.ceil(totalStory / limit)
+                message: 'get story successfully',
+                data: story
             })
         } catch (e) {
             reject(e);
         };
     })
 }
-
+//get all story
+const getAllStory = (page) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const limit = 12;
+            const allStory = await Story.find().limit(limit);
+            resolve({
+                status: 'OK',
+                message: 'get all story successfully',
+                data: allStory,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+// const getAllStory = (page) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const limit = 12;
+//             const totalStory = await Story.countDocuments();
+//             const allStory = await Story.find().limit(limit).skip(page * limit);
+//             resolve({
+//                 status: 'OK',
+//                 message: 'get all story successfully',
+//                 data: allStory,
+//                 total: totalStory,
+//                 pageCurrent: Number(page + 1),
+//                 totalPage: Math.ceil(totalStory / limit)
+//             })
+//         } catch (e) {
+//             reject(e);
+//         };
+//     })
+// }
 
 const getStoriesByMemberId = (memberId) => {
     return new Promise(async (resolve, reject) => {
@@ -112,6 +159,64 @@ const getStoriesByMemberId = (memberId) => {
     })
 }
 
+//get story by category
+const getStoryByCategory = (categoryName, page) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const limit = 10;
+            const totalStory = await Story.find({ category: categoryName }).countDocuments();
+
+            const storyByCategory = await Story.find({ category: categoryName })
+                .limit(limit)
+                .skip(page * limit);
+
+            resolve({
+                status: 'OK',
+                message: 'get story by category',
+                data: storyByCategory,
+                total: totalStory,
+                pageCurrent: Number(page + 1),
+                totalPage: Math.ceil(totalStory / limit)
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//get member story
+const getMemberStory = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allMemberStories = await Story.find({ id_Member: userId});
+            resolve({
+                status: 'OK',
+                message: 'get all member stories successfully',
+                data: allMemberStories,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//Stories awaiting approval
+// const getPendingApprovalStories = (userId) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const limit = 12;
+//             const allStory = await Story.find().limit(limit);
+//             resolve({
+//                 status: 'OK',
+//                 message: 'get all story successfully',
+//                 data: allStory,
+//             })
+//         } catch (e) {
+//             reject(e);
+//         };
+//     })
+// }
+
 
 
 module.exports = {
@@ -119,5 +224,9 @@ module.exports = {
     updateStory,
     getDetailStory,
     getAllStory,
-    getStoriesByMemberId
+    getStoriesByMemberId,
+    getStoryByCategory,
+    getMemberStory,
+    getStoryId,
+    
 };
