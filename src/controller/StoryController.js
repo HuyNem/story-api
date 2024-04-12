@@ -42,6 +42,8 @@ const getStoryById = async (req, res) => {
     }
 }
 
+
+//update story
 const updateStory = async (req, res) => {
     try {
         const storyId = req.params.id;
@@ -93,6 +95,18 @@ const getAllStory = async (req, res) => {
     }
 }
 
+//get new story
+const getNewStory = async (req, res) => {
+    try {
+        const response = await StoryService.getNewStory();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
 //get story by category
 const getStoryByCategory = async (req, res) => {
     try {
@@ -125,20 +139,48 @@ const getMemberStories = async (req, res) => {
     }
 }
 
-//truyện chưa duyệt (admin)
-// const getPendingApprovalStories = async (req, res) => {
-//     try {
-//         const response = await StoryService.getAllStory();
-//         return res.status(200).json(response);
-//     } catch (e) {
-//         return res.status(404).json({
-//             message: e
-//         });
-//     }
-// }
+//get pending approval stories
+const getPendingApprovalStories = async (req, res) => {
+    try {
+        const response = await StoryService.getPendingApprovalStories();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
 
+//get approved stories
+const getApprovedStories = async (req, res) => {
+    try {
+        const response = await StoryService.getApprovedStories();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
 
-
+//approval story
+const approvalStory = async (req, res) => {
+    try {
+        const storyId = req.params.id;
+        if (!storyId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The storyId is required'
+            })
+        }
+        const response = await StoryService.approvalStory(storyId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
 
 module.exports = {
     createStory,
@@ -148,5 +190,10 @@ module.exports = {
     getStoryByCategory,
     getMemberStories,
     getStoryById,
+    getPendingApprovalStories,
+    getApprovedStories,
+    getNewStory,
+    approvalStory,
+
 
 }

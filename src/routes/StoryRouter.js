@@ -3,11 +3,20 @@ const router = express.Router();
 const StoryController = require('../controller/StoryController');
 const authMiddleware = require('../middleware/authMiddleware');
 
+//get new story
+router.get('/new-story', StoryController.getNewStory);
 
-//truyện theo thành viên
+//get approved stories
+router.get('/get-approved-stories', StoryController.getApprovedStories);
+
+//duyệt truyện
+router.put('/approval-story/:id', StoryController.approvalStory);
+
+//get pending approval stories
+router.get('/get-unapproved-stories', StoryController.getPendingApprovalStories);
+
+//get member owned stories
 router.get('/get-member-stories/:userId', StoryController.getMemberStories);
-//truyện chưa được duyệt (admin)
-// router.get('/story-by-admin', StoryController.getPendingApprovalStories);
 
 //get tất cả truyện thuộc thể loại
 router.get('/get-story-by-category/:category/:page', StoryController.getStoryByCategory);

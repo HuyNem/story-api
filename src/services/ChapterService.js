@@ -32,7 +32,64 @@ const createChapter = (newChapter) => {
     })
 }
 
+//EDIT CHAPTER
+//get chapter id (edit)
+const getChapterId = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const chapter = await Chapter.findOne({ _id: id });
+            if (chapter === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Story not found'
+                });
+            };
+            resolve({
+                status: 'OK',
+                message: 'get chapter successfully',
+                data: chapter
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
 //update the chapter
+const updateChapter = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkChapter = await Chapter.findOne({
+                _id: id,
+            });
+            const checkChapNum = await Chapter.findOne({
+                chapNum: data.chapNum,
+                storyId: data.storyId,
+            });
+            if (checkChapter === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Chapter not found'
+                })
+            }
+            else if (checkChapNum) {
+                resolve({
+                    status: 'AR',
+                    message: 'Chương này đã tồn tại'
+                })
+            } else {
+                const updateChapter = await Chapter.findByIdAndUpdate(id, data, { new: true });
+                resolve({
+                    status: "OK",
+                    message: "update chapter successfully",
+                    data: updateChapter
+                })
+            }
+
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
 
 //delete the chapter
 //delete category
@@ -60,8 +117,24 @@ const deleteChapter = (chapterId) => {
     })
 }
 
-//get all chapter
-const getAllChapter = (storyId) => {
+//get chapter
+const getChapter = (storyId, chapNum) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const chapter = await Chapter.find({ storyId: storyId, chapNum: chapNum});
+            resolve({
+                status: 'OK',
+                message: 'get all chapter successfully',
+                data: chapter,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//get chapter by story id
+const getChapterByStoryId = (storyId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const allChapter = await Chapter.find({ storyId: storyId });
@@ -79,6 +152,9 @@ const getAllChapter = (storyId) => {
 
 module.exports = {
     createChapter,
-    getAllChapter,
-    deleteChapter
+    getChapterByStoryId,
+    deleteChapter,
+    getChapterId,
+    updateChapter,
+    getChapter
 }

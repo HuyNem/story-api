@@ -5,13 +5,19 @@ const ChapterController = require('../controller/ChapterController');
 //Thêm chương
 router.post('/create-chapter', ChapterController.createChapter);
 
+//get chapter by id
+router.get('/get-chapter/:id', ChapterController.getChapterById);
+
 //Sửa chương
-// router.post('/create-chapter', ChapterController.createChapter);
+router.put('/update-chapter/:id', ChapterController.updateChapter);
 
 //Xóa chương
 router.delete('/delete-chapter/:id', ChapterController.deleteChapter);
 
-//get all story
-router.get('/:storyId', ChapterController.getAllChapter);
+//get chapters
+router.get('/:storyId/:chapNum', ChapterController.getChapter);
+
+//get all chapters
+router.get('/:storyId', ChapterController.getChapterByStoryId);
 
 module.exports = router;
