@@ -9,7 +9,7 @@ const routes = (app) => {
     app.use('/api/story', storyRouter);
     app.use('/api/chapter', chapterRouter);
     app.use('/api/comment', commentRouter);
-    app.use('/api', userRouter)
+    app.use('/api/user', userRouter)
 }
 
 module.exports = routes;

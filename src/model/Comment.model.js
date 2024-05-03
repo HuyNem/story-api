@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const commentShema = new mongoose.Schema(
     {
-        userId: { type: 'string', required: true },
-        storyId: { type: 'string', required: true },
-        content: { type: 'string', required: true },
+        userId: { type: String, required: true },
+        storyId: { type: String, required: true },
+        content: { type: String, required: true },
+        nameUser: { type: String, required: true },
     },
     { timestamps: true },
 );

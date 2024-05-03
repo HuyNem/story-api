@@ -11,15 +11,18 @@ const createUser = (newUser) => {
             })
             if (checkUser !== null) {
                 resolve({
-                    status: "ERR_EMAIL_AR",
+                    status: "ERR_EMAIL_AE",
                     message: "The email is already"
                 })
             }
             const hash = bcrypt.hashSync(password, 10);
 
+            const name = email.slice(0, email.indexOf('@'));
+
             const createUser = await User.create({
                 email,
                 password: hash, //password
+                name
             });
             if (createUser) {
                 resolve({
@@ -158,11 +161,16 @@ const deleteUser = (id) => {
 const getAllUser = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find();
+            const users = await User.find();
+            // format date
+            const formattedUsers = users.map(user => ({
+                ...user.toObject(),
+                createdDate: new Date(user.createdAt).toLocaleDateString(),
+            }));
             resolve({
                 status: 'OK',
                 message: 'get all users successfully',
-                data: allUser
+                data: formattedUsers
             })
         } catch (e) {
             reject(e);

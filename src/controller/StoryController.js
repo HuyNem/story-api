@@ -2,6 +2,30 @@ const Story = require('../model/Story.model');
 const Chapter = require('../model/Story.model');
 const StoryService = require('../services/StorySecvice');
 
+//get story completed
+const getCompleted = async (req, res) => {
+    try {
+        const response = await StoryService.getCompleted();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
+//search story name or author
+const search = async (req, res) => {
+    try {
+        const q = req.params.q
+        const response = await StoryService.search(q);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
 
 //create story
 const createStory = async (req, res) => {
@@ -41,7 +65,6 @@ const getStoryById = async (req, res) => {
         })
     }
 }
-
 
 //update story
 const updateStory = async (req, res) => {
@@ -182,6 +205,31 @@ const approvalStory = async (req, res) => {
     }
 }
 
+//increase view
+const increaseView = async (req, res) => {
+    try {
+        const storyId = req.params.id;
+        const response = await StoryService.increaseView(storyId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
+//get all story
+const getTopView = async (req, res) => {
+    try {
+        const response = await StoryService.getTopView();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        });
+    }
+}
+
 module.exports = {
     createStory,
     updateStory,
@@ -194,6 +242,9 @@ module.exports = {
     getApprovedStories,
     getNewStory,
     approvalStory,
-
-
+    increaseView,
+    getTopView,
+    search,
+    getCompleted,
+    
 }

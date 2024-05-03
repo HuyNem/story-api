@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 const storyShema = new mongoose.Schema(
     {
-        name: { type: 'string', required: true, unique: true },
-        image: { type: 'string', required: true },
-        author: { type: 'string', required: true },
-        category: { type: 'string', required: true },
-        description: { type: 'string', required: true },
-        status: { type: 'boolean', default: false},
-        id_Member: { type: 'string', required: true}
+        name: { type: String, required: true, unique: true },
+        image: { type: String, required: true },
+        author: { type: String, required: true },
+        category: { type: String, required: true },
+        description: { type: String, required: true },
+        status: { type: Boolean, default: false},
+        isCompleted: { type: Boolean, default: false},
+        id_Member: { type: String, required: true},
+        view: { type: Number, default: 0}
     },
     { timestamps: true },
 );

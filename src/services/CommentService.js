@@ -3,10 +3,10 @@ const Comment = require('../model/Comment.model');
 //create a new comment
 const createComment = (newComment) => {
     return new Promise(async (resolve, reject) => {
-        const { userId, storyId, content } = newComment;
+        const { userId, storyId, nameUser, content } = newComment;
         try {
             const createComment = await Comment.create({
-                userId, storyId, content
+                userId, storyId, nameUser, content
             });
             if (createComment) {
                 resolve({
@@ -25,11 +25,16 @@ const createComment = (newComment) => {
 const getCommentByStoryId = (storyId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const comments = await Comment.find({ storyId: storyId });
+            const comments = await Comment.find({ storyId: storyId }).sort({ createdAt: -1 });
+            // Xử lý ngày thành chuỗi ngày/tháng/năm
+            const formattedComments = comments.map(cmt => ({
+                ...cmt.toObject(),
+                createdDate: new Date(cmt.createdAt).toLocaleDateString(),
+            }));
             resolve({
                 status: 'OK',
                 message: 'get comment successfully',
-                data: comments,
+                data: formattedComments,
             })
         } catch (e) {
             reject(e);

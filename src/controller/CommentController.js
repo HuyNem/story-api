@@ -4,7 +4,6 @@ const CommentService = require('../services/CommentService');
 const createComment = async (req, res) => {
     try {
         const { content } = req.body;
-        console.log('res body: ', res.body);
         if (!content) {
             return res.status(200).json({
                 status: 'ERR',

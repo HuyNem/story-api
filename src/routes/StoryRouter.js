@@ -1,7 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const StoryController = require('../controller/StoryController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { authMiddleWare, authUserMiddleWare } = require('../middleware/authMiddleware');
+
+//story completed
+router.get('/completed', StoryController.getCompleted);
+
+//search name story
+router.get('/search/:q', StoryController.search);
+
+//view
+router.put('/:id/views/increase', StoryController.increaseView);
+
+//get top view
+router.get('/top-view', StoryController.getTopView);
 
 //get new story
 router.get('/new-story', StoryController.getNewStory);
@@ -10,7 +22,7 @@ router.get('/new-story', StoryController.getNewStory);
 router.get('/get-approved-stories', StoryController.getApprovedStories);
 
 //duyệt truyện
-router.put('/approval-story/:id', StoryController.approvalStory);
+router.put('/approval-story/:id', authMiddleWare, StoryController.approvalStory);
 
 //get pending approval stories
 router.get('/get-unapproved-stories', StoryController.getPendingApprovalStories);

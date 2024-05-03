@@ -47,7 +47,7 @@ const loginUser = async (req, res) => {
         } else if (!isCheckEmail) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The input is email'
+                message: 'Email không hợp lệ'
             })
         }
 

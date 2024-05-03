@@ -2,66 +2,15 @@ const Story = require('../model/Story.model');
 const { all } = require('../routes/StoryRouter');
 
 
-//create story
-const createStory = (newStory) => {
-    return new Promise(async (resolve, reject) => {
-        const { name, description, category, author, image, id_Member } = newStory;
-        try {
-            const checkName = await Story.findOne({
-                name: name
-            })
-            if (checkName !== null) {
-                resolve({
-                    status: "AR",
-                    message: "Tên truyện đã tồn tại"
-                })
-            }
-            const createStory = await Story.create({
-                name, description, category, author, image, id_Member
-            });
-            if (createStory) {
-                resolve({
-                    status: 'OK',
-                    message: 'SUCCESS',
-                    data: createStory
-                })
-            }
-        } catch (e) {
-            reject(e);
-        };
-    })
-}
-
-const updateStory = (id, data) => {
+//get story completed
+const getCompleted = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkStory = await Story.findOne({
-                _id: id,
-            });
-            if (checkStory === null) {
-                resolve({
-                    status: 'OK',
-                    message: 'Story not found'
-                })
-            }
-
-
-            const checkName = await Story.findOne({
-                name: data.name,
-                _id: { $ne: id }
-            });
-            if (checkName) {
-                resolve({
-                    status: 'AE',
-                    message: 'Tên truyện đã tồn tại'
-                })
-            }
-
-            const updateStory = await Story.findByIdAndUpdate(id, data, { new: true });
+            const storyCompleted = await Story.find({ isCompleted: true }).limit(6);
             resolve({
-                status: "OK",
-                message: "Success",
-                data: updateStory
+                status: 'OK',
+                message: 'get all story completed successfully',
+                data: storyCompleted,
             })
         } catch (e) {
             reject(e);
@@ -111,8 +60,9 @@ const getDetailStory = (name) => {
         };
     })
 }
+
 //get all story
-const getAllStory = (page) => {
+const getAllStory = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const limit = 12;
@@ -133,11 +83,11 @@ const getNewStory = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const limit = 12;
-            const allStory = await Story.find({ status: true }).sort({ createdAt: -1 }).limit(limit);
+            const newStory = await Story.find({ status: true }).sort({ createdAt: -1 }).limit(limit);
             resolve({
                 status: 'OK',
                 message: 'get all story successfully',
-                data: allStory,
+                data: newStory,
             })
         } catch (e) {
             reject(e);
@@ -203,6 +153,92 @@ const getMemberStory = (userId) => {
     })
 }
 
+//search story name or author
+const search = (q) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const regex = new RegExp(q, 'i');
+            const story = await Story.find({
+                $and: [
+                    { $or: [{ name: regex }, { author: regex }] },
+                    { status: true }
+                ]
+            });
+            resolve({
+                status: 'OK',
+                message: 'get all story successfully',
+                data: story,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//create story
+const createStory = (newStory) => {
+    return new Promise(async (resolve, reject) => {
+        const { name, description, category, author, image, id_Member } = newStory;
+        try {
+            const checkName = await Story.findOne({
+                name: name
+            })
+            if (checkName !== null) {
+                resolve({
+                    status: "AR",
+                    message: "Tên truyện đã tồn tại"
+                })
+            }
+            const createStory = await Story.create({
+                name, description, category, author, image, id_Member
+            });
+            if (createStory) {
+                resolve({
+                    status: 'OK',
+                    message: 'SUCCESS',
+                    data: createStory
+                })
+            }
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//update story
+const updateStory = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkStory = await Story.findOne({ _id: id });
+            if (checkStory === null) {
+                resolve({
+                    status: 'OK',
+                    message: 'Story not found'
+                })
+            }
+            const checkName = await Story.findOne({
+                name: data.name,
+                _id: { $ne: id }
+            });
+            if (checkName) {
+                resolve({
+                    status: 'AE',
+                    message: 'Tên truyện đã tồn tại'
+                })
+            }
+
+            const updateStory = await Story.findByIdAndUpdate(id, data, { new: true });
+            resolve({
+                status: "OK",
+                message: "Success",
+                data: updateStory
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
 //get pending approval stories
 const getPendingApprovalStories = () => {
     return new Promise(async (resolve, reject) => {
@@ -230,7 +266,7 @@ const getApprovedStories = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const stories = await Story.find({ status: true });
-            // Xử lý ngày thành chuỗi ngày/tháng/năm
+            // format date
             const formattedStories = stories.map(story => ({
                 ...story.toObject(),
                 createdDate: new Date(story.createdAt).toLocaleDateString(),
@@ -262,6 +298,41 @@ const approvalStory = (storyId) => {
     })
 }
 
+//increase view
+const increaseView = (storyId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const story = await Story.findOne({ _id: storyId });
+            const increseView = story.view + 1
+            const increase = await Story.findByIdAndUpdate(storyId, { view: increseView });
+            resolve({
+                status: 'OK',
+                message: 'increase successfully',
+                data: increase,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
+//get top view
+const getTopView = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const limit = 10;
+            const topView = await Story.find().sort({ view: -1 }).limit(limit);
+            resolve({
+                status: 'OK',
+                message: 'get top view successfully',
+                data: topView,
+            })
+        } catch (e) {
+            reject(e);
+        };
+    })
+}
+
 
 module.exports = {
     createStory,
@@ -276,5 +347,9 @@ module.exports = {
     getApprovedStories,
     getNewStory,
     approvalStory,
+    increaseView,
+    getTopView,
+    search,
+    getCompleted,
 
 };
