@@ -44,7 +44,7 @@ const loginUser = (userLogin) => {
             const checkUser = await User.findOne({
                 email: email
             })
-            if (checkUser === null) {
+            if (checkUser === null) {   
                 resolve({
                     status: "ERR",
                     message: "Email không tồn tại"
