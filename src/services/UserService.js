@@ -1,5 +1,5 @@
 const User = require('../model/User.model');
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { genneralAccessToken, genneralRefreshToken } = require('./JwtService');
 
 const createUser = (newUser) => {
