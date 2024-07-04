@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
 
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 4000;
 
 const route = require('./routes');
 
